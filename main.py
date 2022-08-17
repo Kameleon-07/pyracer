@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 from pynput.keyboard import Controller
 
+TYPE_PAUSE = 0.03
 
 while True:
 
@@ -56,7 +57,6 @@ while True:
     for el in elements:
         text_to_write += el
 
-    TYPE_PAUSE = 0.03
 
     for character in text_to_write:
         keyboard.press(character)
