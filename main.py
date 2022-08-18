@@ -8,19 +8,25 @@ from pynput.keyboard import Controller
 
 TYPE_PAUSE = 0.03
 
-while True:
-
+def driver_init():
     driver = webdriver.Chrome()
     driver.maximize_window()
-
     driver.get("https://play.typeracer.com/")
 
-    try:
-        agree_button = driver.find_element('xpath', '//*[@id="qc-cmp2-ui"]/div[2]/div/button[3]')
-        agree_button.click()
-    except NoSuchElementException:
-        pass
+    return driver
 
+
+def agree_to_privacy_policy(driver):
+    while True:
+        try:
+            agree_button = driver.find_element('xpath', '//*[@id="qc-cmp2-ui"]/div[2]/div/button[3]')
+            agree_button.click()
+            break
+        except NoSuchElementException:
+            pass
+
+
+def enter_race(driver):
     while True:
         try:
             enter_race = driver.find_element('xpath', '//*[@id="gwt-uid-1"]/a')
@@ -29,6 +35,7 @@ while True:
         except NoSuchElementException:
             pass
 
+def wait_for_active_input_field(driver):
     while True:
         try:
             driver.find_element('xpath', '//*[@id="gwt-uid-20"]/table/tbody/tr[2]/td/table/tbody/tr[2]/td/input')
@@ -42,6 +49,7 @@ while True:
         if disabled_attribute == None:
             break
 
+def get_text_to_write(driver):
     elements = []
     i = 1
 
@@ -51,17 +59,35 @@ while True:
             i += 1
         except:
             break
-    keyboard = Controller()
-
+    
     text_to_write = ''
     for el in elements:
         text_to_write += el
 
+    return text_to_write
+    
+def autotype(text_to_write):
+    keyboard = Controller()
 
     for character in text_to_write:
         keyboard.press(character)
         keyboard.release(character)
         sleep(TYPE_PAUSE)
-    
-    sleep(1)
-    driver.close()
+
+def main():
+    while True:
+        driver = driver_init()
+
+        agree_to_privacy_policy(driver)
+        enter_race(driver)
+
+        wait_for_active_input_field(driver)
+        text_to_write = get_text_to_write(driver)
+
+        autotype(text_to_write)
+
+        sleep(1)
+        driver.close()
+
+if __name__ == "__main__":
+    main()
